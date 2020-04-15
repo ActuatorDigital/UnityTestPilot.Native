@@ -1,8 +1,6 @@
 {
     "name": "AIR.UnityTestPilot.Native",
-    "references": [
-        "AIR.UnityTestPilot"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
