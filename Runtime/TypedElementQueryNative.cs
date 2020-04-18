@@ -16,6 +16,9 @@ namespace AIR.UnityTestPilot.Queries
 
         public override UiElement[] Search()
         {
+            if (_queryType == null)
+                return null;
+
             var hits = UnityEngine.Object
                 .FindObjectsOfType(_queryType)
                 .ToArray();

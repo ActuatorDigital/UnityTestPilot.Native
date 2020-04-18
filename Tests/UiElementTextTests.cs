@@ -45,7 +45,6 @@ public class UiElementTextTests
         var actualText = textQuerty.Text;
 
         // Assert
-        
         Assert.AreEqual(EXPECTED_TEXT, actualText);
     }
 
