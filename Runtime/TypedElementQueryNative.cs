@@ -1,3 +1,5 @@
+// Copyright (c) AIR Pty Ltd. All rights reserved.
+
 using System;
 using System.Linq;
 using AIR.UnityTestPilot.Interactions;
@@ -6,9 +8,11 @@ namespace AIR.UnityTestPilot.Queries
 {
     public class TypedElementQueryNative : TypedElementQuery
     {
-        public TypedElementQueryNative(Type type, string name) : base(type, name) { }
+        public TypedElementQueryNative(Type type, string name)
+            : base(type, name) { }
 
-        public TypedElementQueryNative(Type type) : base(type) { }
+        public TypedElementQueryNative(Type type)
+            : base(type) { }
 
         public override UiElement[] Search()
         {
@@ -19,15 +23,17 @@ namespace AIR.UnityTestPilot.Queries
             if (!hits.Any())
                 return null;
 
-            if (_queryName != null)
+            if (_queryName != null) {
                 hits = hits
                     .Where(h => h.name == _queryName)
                     .ToArray();
+            }
 
-            if (hits.Any())
+            if (hits.Any()) {
                 return hits
                     .Select(h => new UiElementNative(h))
                     .ToArray();
+            }
 
             return null;
         }

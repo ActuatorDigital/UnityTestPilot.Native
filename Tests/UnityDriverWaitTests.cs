@@ -1,59 +1,63 @@
-﻿using UnityEngine.TestTools;
-using System.Collections;
-using NUnit.Framework;
-using UnityEngine;
+﻿// Copyright (c) AIR Pty Ltd. All rights reserved.
+
 using System;
+using System.Collections;
 using AIR.UnityTestPilot.Agents;
 using AIR.UnityTestPilot.Drivers;
 using AIR.UnityTestPilot.Interactions;
 using AIR.UnityTestPilot.Queries;
+using NUnit.Framework;
+using UnityEngine;
+using UnityEngine.TestTools;
+using Object = UnityEngine.Object;
 
 [TestFixture]
-public class UnityDriverWaitTests {
-    
-    const string TEST_GO_NAME = "TEST";
+public class UnityDriverWaitTests
+{
+    private const string TEST_GO_NAME = "TEST";
     private UnityDriver _driver;
     private GameObject _testGo;
-    
+
     [SetUp]
-    public void Setup() {
+    public void Setup()
+    {
         var agent = new NativeUnityDriverAgent();
         _driver = new UnityDriver(agent);
     }
-    
+
     [TearDown]
-    public void TearDown() {
+    public void TearDown()
+    {
         _driver.Dispose();
-        GameObject.DestroyImmediate(_testGo);
+        Object.DestroyImmediate(_testGo);
     }
 
     [UnityTest]
-    public IEnumerator Until_LateElementCreation_ElementFound() {
-        
+    public IEnumerator Until_LateElementCreation_ElementFound()
+    {
         // Arrange
         var startTime = Time.time;
         const int TIMEOUT = 2, TEST_DELAY = 1;
         Coroutiner.StartCoroutine(DelayedSpawnGO(TEST_GO_NAME, TEST_DELAY));
         UiElement element = null;
         var wait = new UnityDriverWait(_driver, TimeSpan.FromSeconds(TIMEOUT));
-        
+
         // Act
-        yield return wait.Until(d => 
-            d.FindElement(By.Name(TEST_GO_NAME)), 
+        yield return wait.Until(
+            d => d.FindElement(By.Name(TEST_GO_NAME)),
             (e) => element = e
         );
-            
+
         // Assert
         Assert.IsNotNull(element);
         Assert.Less(Time.time, startTime + TIMEOUT);
         Assert.Greater(Time.time, startTime);
         Assert.GreaterOrEqual(Time.time, startTime + TEST_DELAY);
-        
     }
 
     [UnityTest]
-    public IEnumerator Until_ElementExists_FindsNextFrame() {
-        
+    public IEnumerator Until_ElementExists_FindsNextFrame()
+    {
         // Arrange
         _testGo = new GameObject(TEST_GO_NAME);
         yield return null;
@@ -61,40 +65,39 @@ public class UnityDriverWaitTests {
         UiElement element = null;
         var startFrame = Time.frameCount;
         var wait = new UnityDriverWait(_driver, TimeSpan.FromSeconds(1f));
-        
+
         // Act
-        yield return wait.Until(d =>
-            d.FindElement(By.Name(TEST_GO_NAME)),
+        yield return wait.Until(
+            d => d.FindElement(By.Name(TEST_GO_NAME)),
             (v) => element = v
         );
-        
+
         // Assert
         Assert.IsNotNull(element);
-        Assert.AreEqual(startFrame+NEXT_FRAME, Time.frameCount);
-
+        Assert.AreEqual(startFrame + NEXT_FRAME, Time.frameCount);
     }
 
     [UnityTest]
-    public IEnumerator Until_MissingElement_TimesOut() {
-        
+    public IEnumerator Until_MissingElement_TimesOut()
+    {
         // Arrange
         const int TIMEOUT = 1;
         float startTime = Time.time;
         var wait = new UnityDriverWait(_driver, TimeSpan.FromSeconds(TIMEOUT));
-        
+
         // Act
-        yield return wait.Until(d => 
-            { return null; }, 
+        yield return wait.Until(
+            d => null,
             (e) => { }
         );
-        
+
         // Assert
         Assert.Greater(Time.time, startTime + TIMEOUT);
     }
 
-    private IEnumerator DelayedSpawnGO(string goName, float delay) {
+    private IEnumerator DelayedSpawnGO(string goName, float delay)
+    {
         yield return new WaitForSeconds(delay);
         _testGo = new GameObject(goName);
     }
-    
 }

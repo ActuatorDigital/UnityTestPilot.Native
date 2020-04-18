@@ -1,3 +1,5 @@
+// Copyright (c) AIR Pty Ltd. All rights reserved.
+
 using AIR.UnityTestPilot.Interactions;
 using AIR.UnityTestPilot.Queries;
 using UnityEngine;
@@ -18,6 +20,5 @@ namespace AIR.UnityTestPilot.Agents {
         public UiElement[] Query(ElementQuery query) {
             return query.Search();
         }
-
     }
 }
