@@ -38,7 +38,7 @@ public class UnityDriverWaitTests
         // Arrange
         var startTime = Time.time;
         const int TIMEOUT = 2, TEST_DELAY = 1;
-        Coroutiner.StartCoroutine(DelayedSpawnGO(TEST_GO_NAME, TEST_DELAY));
+        yield return DelayedSpawnGO(TEST_GO_NAME, TEST_DELAY);
         UiElement element = null;
         var wait = new UnityDriverWait(_driver, TimeSpan.FromSeconds(TIMEOUT));
 
