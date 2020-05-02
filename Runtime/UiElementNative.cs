@@ -30,6 +30,9 @@ namespace AIR.UnityTestPilot.Interactions
                 if (UnityObject is Text goText)
                     return goText.text;
 
+                if (UnityObject is InputField inputText)
+                    return inputText.text;
+
                 if (UnityObject is MonoBehaviour goMb) {
                     goText = goMb.GetComponent<Text>();
                     if (goText != null)
