@@ -68,7 +68,12 @@ namespace AIR.UnityTestPilot.Interactions
 
         public override void SimulateKeys(string keys)
         {
-            throw new NotImplementedException("Convert string to keys then call SimulateKeys.");
+            if (UnityObject is InputField inputField) {
+                inputField.text = keys;
+                return;
+            }
+
+            throw new NotImplementedException(UnityObject.GetType() + " input handling not yet implemented.");
         }
 
         private void SimulateClick(PointerEventData.InputButton mouseButton)
