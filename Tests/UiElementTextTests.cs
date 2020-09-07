@@ -2,6 +2,7 @@
 
 using AIR.UnityTestPilot.Agents;
 using AIR.UnityTestPilot.Drivers;
+using AIR.UnityTestPilot.Interactions;
 using AIR.UnityTestPilot.Queries;
 using NUnit.Framework;
 using UnityEngine;

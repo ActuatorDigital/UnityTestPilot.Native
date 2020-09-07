@@ -1,6 +1,7 @@
 // Copyright (c) AIR Pty Ltd. All rights reserved.
 
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -49,12 +50,42 @@ namespace AIR.UnityTestPilot.Interactions
             }
         }
 
+        public override Float3 LocalPosition {
+            get {
+                if (UnityObject is GameObject unityGameObject) {
+                    var localPos = unityGameObject.transform.localPosition;
+                    return new Float3(localPos.x, localPos.y, localPos.z);
+                }
+
+                return default;
+            }
+        }
+
+        public override Float3 EulerRotation {
+            get {
+                if (UnityObject is GameObject unityGameObject) {
+                    var localPos = unityGameObject.transform.rotation.eulerAngles;
+                    return new Float3(localPos.x, localPos.y, localPos.z);
+                }
+
+                return default;
+            }
+        }
+
         private Object UnityObject => _object as Object;
 
         public override void MiddleClick() => SimulateClick(PointerEventData.InputButton.Middle);
         public override void RightClick() => SimulateClick(PointerEventData.InputButton.Right);
         public override void LeftClick() => SimulateClick(PointerEventData.InputButton.Left);
         public override void LeftClickDown() => SimulateClickDown(PointerEventData.InputButton.Left);
+        public override void LeftClickAndHold(TimeSpan holdTime)
+        {
+            LeftClickDown();
+            new GameObject(nameof(ClickHolder))
+                .AddComponent<ClickHolder>()
+                .ClickAndHold(holdTime, LeftClickUp);
+        }
+
         public override void RightClickDown() => SimulateClickDown(PointerEventData.InputButton.Right);
         public override void MiddleClickDown() => SimulateClickDown(PointerEventData.InputButton.Middle);
         public override void LeftClickUp() => SimulateClickUp(PointerEventData.InputButton.Left);
@@ -109,6 +140,26 @@ namespace AIR.UnityTestPilot.Interactions
                     foreach (var handler in handlers)
                         buttonAction?.Invoke(handler, EventSystem.current);
                 }
+            }
+        }
+
+        private class ClickHolder : MonoBehaviour
+        {
+            private TimeSpan _holdTime;
+            private Action _then;
+
+            public void ClickAndHold(TimeSpan holdTime, Action then)
+            {
+                _then = then;
+                _holdTime = holdTime;
+                StartCoroutine(ClickAndHold());
+            }
+
+            private IEnumerator ClickAndHold()
+            {
+                yield return new WaitForSeconds((float)_holdTime.TotalSeconds);
+                _then?.Invoke();
+                Destroy(gameObject);
             }
         }
     }

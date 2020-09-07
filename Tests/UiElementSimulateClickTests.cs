@@ -1,5 +1,6 @@
 // Copyright (c) AIR Pty Ltd. All rights reserved.
 
+using System;
 using System.Collections;
 using AIR.UnityTestPilot.Agents;
 using AIR.UnityTestPilot.Drivers;
@@ -10,6 +11,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 [TestFixture]
 public class UiElementSimulateClickTests
@@ -110,5 +112,35 @@ public class UiElementSimulateClickTests
 
         // Assert
         Assert.IsTrue(pointerDownTriggered);
+    }
+    
+    [Timeout(1500)]
+    [UnityTest]
+    public IEnumerator LeftClickAndHold_EventTriggersRegistered_PointerDownAndUpTriggered()
+    {
+        // Arrange
+        bool pointerDownTriggered = false;
+        bool pointerUpTriggered = false;
+
+        var pointerDownTrigger = new EventTrigger.Entry();
+        pointerDownTrigger.eventID = EventTriggerType.PointerDown;
+        pointerDownTrigger.callback.AddListener((data) => pointerDownTriggered = true);
+
+        var pointerUpTrigger = new EventTrigger.Entry();
+        pointerUpTrigger.eventID = EventTriggerType.PointerUp;
+        pointerUpTrigger.callback.AddListener((data) => pointerUpTriggered = true);
+
+        var et = _button.gameObject.AddComponent<EventTrigger>();
+        et.triggers.Add(pointerDownTrigger);
+        et.triggers.Add(pointerUpTrigger);
+
+        // Act
+        _buttonElement.LeftClickAndHold(TimeSpan.FromSeconds(1));
+        Assert.IsFalse(pointerUpTriggered);
+        yield return new WaitForSeconds(1.1f);
+
+        // Assert
+        Assert.IsTrue(pointerDownTriggered);
+        Assert.IsTrue(pointerUpTriggered);
     }
 }
