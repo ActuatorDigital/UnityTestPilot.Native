@@ -50,6 +50,24 @@ public class UiElementTextTests
     }
 
     [Test]
+    public void Text_OnTextMeshElement_ReturnsText()
+    {
+        // Arrange
+        var go = new GameObject(TEST_TEXT_GO_NAME, typeof(TextMesh));
+        go.transform.SetParent(_testRootGo);
+        var testText = go.GetComponent<TextMesh>();
+        const string EXPECTED_TEXT = "Text_OnTextMeshElement_ReturnsText";
+        testText.text = EXPECTED_TEXT;
+        var textQuerty = _driver.FindElement(By.Type<TextMesh>(TEST_TEXT_GO_NAME));
+
+        // Act
+        var actualText = textQuerty.Text;
+
+        // Assert
+        Assert.AreEqual(EXPECTED_TEXT, actualText);
+    }
+
+    [Test]
     public void Text_OnElementWithTextComponet_ReturnsText()
     {
         // Arrange

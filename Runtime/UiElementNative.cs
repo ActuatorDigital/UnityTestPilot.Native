@@ -46,6 +46,15 @@ namespace AIR.UnityTestPilot.Interactions
                         return goText.text;
                 }
 
+                // To support use of external GUI, like tmpro or ngui or TextMesh objects
+                var reflectedTextField = UnityObject.GetType().GetProperty("text");
+                if (reflectedTextField != null)
+                {
+                    var textPropertyGetResult = reflectedTextField.GetMethod.Invoke(UnityObject, new object[0]);
+                    if (textPropertyGetResult is string textPropertyGetResultAsString)
+                        return textPropertyGetResultAsString;
+                }
+
                 return string.Empty;
             }
         }
