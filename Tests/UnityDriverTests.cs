@@ -30,6 +30,52 @@ public class UnityDriverTests
     }
 
     [Test]
+    public void FindElementByPath_ElementExists_FindsElement()
+    {
+        // Arrange
+        const string CHILD_GO_NAME = "baby";
+        var parent = new GameObject(TEST_GO_NAME);
+        var child = new GameObject(CHILD_GO_NAME);
+        child.transform.parent = parent.transform;
+        _testGos.Add(parent);
+        _testGos.Add(child);
+
+        // Act
+        var uiElement = _driver.FindElement(By.Path(TEST_GO_NAME + "/" + CHILD_GO_NAME));
+
+        // Assert
+        Assert.IsNotNull(uiElement);
+    }
+
+    [Test]
+    public void FindElementByPath_ElementExistsWithFullPathName_FindsElementAsIfNameQuery()
+    {
+        // Arrange
+        const string CHILD_GO_NAME = "baby";
+        var parent = new GameObject(TEST_GO_NAME + "/" + CHILD_GO_NAME);
+        _testGos.Add(parent);
+
+        // Act
+        var uiElement = _driver.FindElement(By.Path(TEST_GO_NAME + "/" + CHILD_GO_NAME));
+
+        // Assert
+        Assert.IsNotNull(uiElement);
+    }
+
+    [Test]
+    public void FindElementByPath_NoElementExists_FindsNothing()
+    {
+        // Arrange
+        const string CHILD_GO_NAME = "baby";
+
+        // Act
+        var uiElement = _driver.FindElement(By.Path(TEST_GO_NAME + "/" + CHILD_GO_NAME));
+
+        // Assert
+        Assert.IsNull(uiElement);
+    }
+
+    [Test]
     public void FindElementByName_ElementExists_FindsElement()
     {
         // Arrange

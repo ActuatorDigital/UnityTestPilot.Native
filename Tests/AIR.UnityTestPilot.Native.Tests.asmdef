@@ -12,7 +12,8 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "nunit.framework.dll",
-        "AIR.UnityTestPilot.dll"
+        "AIR.UnityTestPilot.dll",
+        "AIR.UnityTestPilotRemote.Common.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
