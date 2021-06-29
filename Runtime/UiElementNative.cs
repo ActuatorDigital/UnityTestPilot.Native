@@ -11,6 +11,8 @@ namespace AIR.UnityTestPilot.Interactions
 {
     public class UiElementNative : UiElement
     {
+        private const string FALLBACK_TEXT_PROPERTY_NAME = "text";
+
         public UiElementNative(Object obj)
             : base(obj) { }
 
@@ -47,19 +49,47 @@ namespace AIR.UnityTestPilot.Interactions
                 }
 
                 // To support use of external GUI, like tmpro or ngui or TextMesh objects
-                var reflectedTextField = UnityObject.GetType().GetProperty("text");
-                if (reflectedTextField != null)
-                {
-                    var textPropertyGetResult = reflectedTextField.GetMethod.Invoke(UnityObject, new object[0]);
-                    if (textPropertyGetResult is string textPropertyGetResultAsString)
-                        return textPropertyGetResultAsString;
+                if (GetTextPropertyFrom(UnityObject, out var directUnityObjectStringProp)) {
+                    return directUnityObjectStringProp;
+                }
+
+                //To support use of non UI.Text and the lack of ability to target the desired type we 
+                //   we now try to get ANY component if we a GameObject.
+                if (UnityObject is GameObject asGo) {
+                    var components = asGo.GetComponents<Component>();
+                    foreach (var component in components)
+                    {
+                        if (GetTextPropertyFrom(component, out var monoBehStringProp))
+                            return monoBehStringProp;
+                    }
                 }
 
                 return string.Empty;
             }
         }
 
-        public override Float3 LocalPosition {
+        private static bool GetTextPropertyFrom(
+            UnityEngine.Object unityObject,
+            out string propertyString) {
+            propertyString = null;
+
+            var reflectedTextField = unityObject.GetType().GetProperty(FALLBACK_TEXT_PROPERTY_NAME);
+            if (reflectedTextField == null)
+                return false;
+
+            var textPropertyGetResult = reflectedTextField.GetMethod.Invoke(unityObject, new object[0]);
+            if (textPropertyGetResult is string textPropertyGetResultAsString)
+            {
+                propertyString = textPropertyGetResultAsString;
+                return true;
+            }
+
+            return false;
+
+        }
+
+        public override Float3 LocalPosition
+        {
             get {
                 if (UnityObject is GameObject unityGameObject) {
                     var localPos = unityGameObject.transform.localPosition;
@@ -70,7 +100,8 @@ namespace AIR.UnityTestPilot.Interactions
             }
         }
 
-        public override Float3 EulerRotation {
+        public override Float3 EulerRotation
+        {
             get {
                 if (UnityObject is GameObject unityGameObject) {
                     var localPos = unityGameObject.transform.rotation.eulerAngles;
