@@ -14,9 +14,39 @@ namespace AIR.UnityTestPilot.Interactions
         private const string FALLBACK_TEXT_PROPERTY_NAME = "text";
 
         public UiElementNative(Object obj)
-            : base(obj) { }
+            : base(obj)
+        {
+            Transform currentTransform = null;
+
+            if (UnityObject is Component cgo)
+                currentTransform = cgo.transform;
+            else if (UnityObject is GameObject go)
+                currentTransform = go.transform;
+
+            BuildPathFromTransform(currentTransform);
+        }
+
+        private void BuildPathFromTransform(Transform currentTransform)
+        {
+            if (currentTransform == null)
+                return;
+
+            string buildingPath = currentTransform.gameObject.name;
+
+            while (currentTransform.parent != null)
+            {
+                currentTransform = currentTransform.parent;
+
+                buildingPath = currentTransform.gameObject.name + '/' + buildingPath;
+            }
+
+            fullPath = buildingPath;
+        }
 
         public override string Name => UnityObject.name;
+
+        private string fullPath;
+        public override string FullPath => fullPath;
 
         public override bool IsActive {
             get {
