@@ -204,19 +204,31 @@ namespace AIR.UnityTestPilot.Interactions
 
         private void ButtonEventInvoke<T>(Action<T, EventSystem> buttonAction)
         {
+            MonoBehaviour eligableMonoBeh = null;
+
             if (UnityObject is MonoBehaviour mbUO)
             {
-                InvokeAllHandlers(buttonAction, mbUO);
+                eligableMonoBeh = mbUO;
             }
 
-            if (UnityObject is GameObject go) {
-                var mbs = go.GetComponents<MonoBehaviour>();
-                if (mbs != null) {
-                    foreach (var mb in mbs)
-                    {
-                        InvokeAllHandlers(buttonAction, mb);
-                    }
-                }
+            if (UnityObject is GameObject go)
+            {
+                var button = go.GetComponent<Button>();
+                if (button != null)
+                    eligableMonoBeh = button;
+
+                var drop = go.GetComponent<Dropdown>();
+                if (drop != null)
+                    eligableMonoBeh = drop;
+
+                var toggle = go.GetComponent<Toggle>();
+                if (toggle != null)
+                    eligableMonoBeh = toggle;
+            }
+
+            if (eligableMonoBeh != null)
+            {
+                InvokeAllHandlers(buttonAction, eligableMonoBeh);
             }
         }
 
