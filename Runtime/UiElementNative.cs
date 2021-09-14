@@ -213,17 +213,7 @@ namespace AIR.UnityTestPilot.Interactions
 
             if (UnityObject is GameObject go)
             {
-                var button = go.GetComponent<Button>();
-                if (button != null)
-                    eligableMonoBeh = button;
-
-                var drop = go.GetComponent<Dropdown>();
-                if (drop != null)
-                    eligableMonoBeh = drop;
-
-                var toggle = go.GetComponent<Toggle>();
-                if (toggle != null)
-                    eligableMonoBeh = toggle;
+                eligableMonoBeh = go.GetComponent<MonoBehaviour>();
             }
 
             if (eligableMonoBeh != null)
