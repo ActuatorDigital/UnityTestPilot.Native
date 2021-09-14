@@ -9,6 +9,12 @@ namespace AIR.UnityTestPilot.Queries
 {
     public class PathElementQueryNative : PathElementQuery
     {
+        private const string WILDCARD_PREFIX = "*";
+        private const string QUERY_KEYWORD_PREFIX = "[";
+        private const string QUERY_KEYWORD_SUFFIX = "]";
+        private const string CONTAINS_PREFIX = "contains(";
+        private const string TERM_SUFFIX = ")";
+
         private class PathQuery
         {
             private readonly string _pathToFind;
@@ -41,8 +47,7 @@ namespace AIR.UnityTestPilot.Queries
                 if (!elements.Any())
                     break;
 
-                elements = elements.Where(x => x.name == querySection)
-                    .ToArray();
+                elements = SectionQuery(elements, querySection);
 
                 if (i < querySections.Count - 1)
                 {
@@ -58,6 +63,34 @@ namespace AIR.UnityTestPilot.Queries
             }
 
             return null;
+        }
+
+        private GameObject[] SectionQuery(GameObject[] elements, string querySection)
+        {
+            if (querySection.StartsWith(WILDCARD_PREFIX))
+            {
+                querySection = querySection.Substring(1);
+
+                if (querySection.StartsWith(QUERY_KEYWORD_PREFIX) && querySection.EndsWith(QUERY_KEYWORD_SUFFIX))
+                {
+                    querySection = querySection.Substring(1, querySection.Length - 2);
+                    if (querySection.StartsWith(CONTAINS_PREFIX) && querySection.EndsWith(TERM_SUFFIX))
+                    {
+                        var partialName = querySection.Substring(CONTAINS_PREFIX.Length, querySection.Length - 1 - CONTAINS_PREFIX.Length);
+
+                        return elements.Where(x => x.name.Contains(partialName))
+                            .ToArray();
+                    }
+                }
+
+                // no specifics requsted, have them all back.
+                return elements;
+            }
+            else
+            {
+                return elements.Where(x => x.name == querySection)
+                    .ToArray();
+            }
         }
 
         private GameObject[] GetAllChildren(GameObject go)

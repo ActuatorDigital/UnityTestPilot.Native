@@ -66,6 +66,9 @@ namespace AIR.UnityTestPilot.Interactions
                 if (UnityObject is InputField inputText)
                     return inputText.text;
 
+                if (UnityObject is Dropdown dropdown)
+                    return dropdown.options[dropdown.value].text;
+
                 if (UnityObject is MonoBehaviour goMb) {
                     goText = goMb.GetComponent<Text>();
                     if (goText != null)
@@ -76,6 +79,10 @@ namespace AIR.UnityTestPilot.Interactions
                     goText = go.GetComponent<Text>();
                     if (goText != null)
                         return goText.text;
+
+                    dropdown = go.GetComponent<Dropdown>();
+                    if (dropdown != null)
+                        return dropdown.options[dropdown.value].text;
                 }
 
                 // To support use of external GUI, like tmpro or ngui or TextMesh objects
@@ -197,20 +204,27 @@ namespace AIR.UnityTestPilot.Interactions
 
         private void ButtonEventInvoke<T>(Action<T, EventSystem> buttonAction)
         {
-            if (UnityObject is MonoBehaviour mb) {
-                var handlers = mb.GetComponents<T>();
-                foreach (var handler in handlers)
-                    buttonAction?.Invoke(handler, EventSystem.current);
+            if (UnityObject is MonoBehaviour mbUO)
+            {
+                InvokeAllHandlers(buttonAction, mbUO);
             }
 
             if (UnityObject is GameObject go) {
-                var button = go.GetComponent<Button>();
-                if (button != null) {
-                    var handlers = button.GetComponents<T>();
-                    foreach (var handler in handlers)
-                        buttonAction?.Invoke(handler, EventSystem.current);
+                var mbs = go.GetComponents<MonoBehaviour>();
+                if (mbs != null) {
+                    foreach (var mb in mbs)
+                    {
+                        InvokeAllHandlers(buttonAction, mb);
+                    }
                 }
             }
+        }
+
+        private static void InvokeAllHandlers<T>(Action<T, EventSystem> buttonAction, MonoBehaviour mb)
+        {
+            var handlers = mb.GetComponents<T>();
+            foreach (var handler in handlers)
+                buttonAction?.Invoke(handler, EventSystem.current);
         }
 
         private class ClickHolder : MonoBehaviour
