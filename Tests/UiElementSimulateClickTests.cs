@@ -59,6 +59,21 @@ public class UiElementSimulateClickTests
         Assert.True(clicked);
     }
 
+    [Test]
+    public void LeftClick_TargetIsButtonAndButtonIsNonInteractable_ButtonIsNotClicked()
+    {
+        // Arrange
+        bool clicked = false;
+        _button.onClick.AddListener(() => clicked = true);
+        _button.interactable = false;
+
+        // Act
+        _buttonElement.LeftClick();
+
+        // Assert
+        Assert.False(clicked);
+    }
+
     [UnityTest]
     public IEnumerator LeftClickDown_NoRelease_ButtonNotClicked()
     {

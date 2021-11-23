@@ -226,7 +226,15 @@ namespace AIR.UnityTestPilot.Interactions
         {
             var handlers = mb.GetComponents<T>();
             foreach (var handler in handlers)
+            {
+                if (handler is Selectable selectableHandler
+                    && !selectableHandler.interactable)
+                {
+                    continue;
+                }
+
                 buttonAction?.Invoke(handler, EventSystem.current);
+            }
         }
 
         private class ClickHolder : MonoBehaviour
